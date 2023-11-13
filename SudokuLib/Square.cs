@@ -105,7 +105,11 @@ namespace SudokuLib
                 //_possibleValues=new List<int>();
                 //_possibleValues.Add(_presetValue);
 
-                OnSquareSolved(this, new SquareSolvedEventArgs(_presetValue, true));
+                OnSquareSolved(this, new SquareSolvedEventArgs()
+                {
+                    IsPreset = true,
+                    KnownValue = _presetValue
+                });
             }
         }
 
@@ -131,7 +135,11 @@ namespace SudokuLib
                     //Set the new solvedvalue
                     _solvedValue = value;
 
-                    OnSquareSolved(this, new SquareSolvedEventArgs(_solvedValue, false));
+                    OnSquareSolved(this, new SquareSolvedEventArgs()
+                    {
+                        IsPreset = false,
+                        KnownValue = _solvedValue
+                    });
                 }
             }
         }
@@ -220,7 +228,11 @@ namespace SudokuLib
                             OnSquareNotSolvable(this, new EventArgs());
                             break;
                         case 1:
-                            OnSquareSolved(this, new SquareSolvedEventArgs(_possibleValues[0], false));
+                            OnSquareSolved(this, new SquareSolvedEventArgs()
+                            {
+                                IsPreset = false,
+                                KnownValue = _possibleValues[0]
+                            });
                             break;
                         default:
                             break;
@@ -231,8 +243,7 @@ namespace SudokuLib
             }
         }
 
-        public delegate void SquareSolvedHandler(Square sender, SquareSolvedEventArgs e);
-        public event SquareSolvedHandler OnSquareSolved;
+        public event EventHandler<SquareSolvedEventArgs> OnSquareSolved;
 
         //public delegate void SquareUnSolvedHandler(Square sender, SquareSolvedEventArgs e);
         //public event SquareUnSolvedHandler OnSquareUnSolved;
@@ -274,30 +285,10 @@ namespace SudokuLib
     }
     public class SquareSolvedEventArgs : EventArgs
     {
-        public SquareSolvedEventArgs()
-        {
-        }
-
-        public SquareSolvedEventArgs(int knownValue, bool isPreset)
-        {
-            this.KnownValue = knownValue;
-            this.IsPreset = isPreset;
-        }
-
-        private bool _isPreset;
-        public bool IsPreset
-        {
-            get { return _isPreset; }
-            set { _isPreset = value; }
-        }
-
-        private int _knownValue;
-        public int KnownValue
-        {
-            get { return _knownValue; }
-            set { _knownValue = value; }
-        }
+        public bool IsPreset { get; set; }
+        public int KnownValue { get; set; }
     }
+
     public class InvalidPresetException : Exception
     {
         public InvalidPresetException()

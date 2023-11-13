@@ -25,7 +25,7 @@ namespace SudokuLib
         public void AddSquare(Square square)
         {
             _squares.Add(square);
-            square.OnSquareSolved += new Square.SquareSolvedHandler(square_OnSquareSolved);
+            square.OnSquareSolved += square_OnSquareSolved;
             square.OnSquareExcludedChanged += new Square.SquareExcludedChangedHandler(square_OnSquareExcludedChanged);
             //square.OnSquareUnSolved += new Square.SquareUnSolvedHandler(square_OnSquareUnSolved);
         }
@@ -119,13 +119,14 @@ namespace SudokuLib
             }
         }
 
-        void square_OnSquareSolved(Square sender, SquareSolvedEventArgs e)
+
+        void square_OnSquareSolved(object sender, SquareSolvedEventArgs e)
         {
             //loop through the other squares in this series to 
             //inform them about a new exluded value
             foreach (Square square in _squares)
             {
-                if (square.Number != sender.Number)
+                if (square.Number != ((Square)sender).Number)
                 {
                     square.ExcludeValue(e.KnownValue);
                 }
