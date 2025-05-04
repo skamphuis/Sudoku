@@ -35,13 +35,13 @@ namespace SudokuLib
 
                     _boxes[boxcol + (boxrow * 3)].AddSquare(sq);
 
-                    sq.OnSquareSolved += new Square.SquareSolvedHandler(sq_OnSquareSolved);
-                    //sq.OnSquareUnSolved += new Square.SquareUnSolvedHandler(sq_OnSquareUnSolved);
+                    sq.OnSquareSolved += sq_OnSquareSolved;
 
                     //now find the right miniseries to put this square into
                 }
             }
         }
+
         private void createMiniSeries()
         {
 //            int miniSeriesSize = (int)Math.Sqrt(this.Size);
@@ -97,7 +97,7 @@ namespace SudokuLib
         //    OnBoardEvent(this, EventArgs.Empty);
         //}
 
-        void sq_OnSquareSolved(Square sender, SquareSolvedEventArgs e)
+        private void sq_OnSquareSolved(object sender, SquareSolvedEventArgs e)
         {
             _knownSquares++;
             if (e.IsPreset)
@@ -119,7 +119,7 @@ namespace SudokuLib
 
             if (sudokuSolved)
             {
-                OnSudokuSolved(this, new EventArgs());
+                OnSudokuSolved(this, EventArgs.Empty);
             }
         }
         public delegate void SudokuSolvedHandler(Board sender, EventArgs e);
@@ -137,12 +137,23 @@ namespace SudokuLib
                 {
                     throw new Exception("Size cannot be set after the board has been initialised.");
                 }
+                if (value < 4 || value > 25)
+                {
+                    throw new Exception("Size must be between 4 and 16.");
+                }
+                else if (Math.Sqrt(value) % 1 != 0)
+                {
+                    throw new Exception("Size must be a perfect square.");
+                }
                 else
                 {
                     _size = value;
                 }
             }
         }
+
+        public int BoxSize => (int)Math.Sqrt(Size);
+
         #endregion
 
         #region Series

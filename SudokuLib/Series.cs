@@ -26,7 +26,7 @@ namespace SudokuLib
         {
             _squares.Add(square);
             square.OnSquareSolved += square_OnSquareSolved;
-            square.OnSquareExcludedChanged += new Square.SquareExcludedChangedHandler(square_OnSquareExcludedChanged);
+            square.OnSquareExcludedChanged += square_OnSquareExcludedChanged;
             //square.OnSquareUnSolved += new Square.SquareUnSolvedHandler(square_OnSquareUnSolved);
         }
 
@@ -140,7 +140,7 @@ namespace SudokuLib
             //}
         }
 
-        void square_OnSquareExcludedChanged(Square sender, ExcludedChangedEventArgs e)
+        void square_OnSquareExcludedChanged(object sender, ExcludedChangedEventArgs e)
         {
             //We'll need to find out if this exclusion of a value leaves
             //a single place for this value;

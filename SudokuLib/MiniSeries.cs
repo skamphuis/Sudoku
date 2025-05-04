@@ -11,17 +11,17 @@ namespace SudokuLib
             foreach (Square sq in squares)
             {
                 //add event handlers
-                sq.OnSquareExcludedChanged += new Square.SquareExcludedChangedHandler(sq_OnSquareExcludedChanged);
-                sq.OnSquareSolved += new Square.SquareSolvedHandler(sq_OnSquareSolved);
+                sq.OnSquareExcludedChanged += sq_OnSquareExcludedChanged;
+                sq.OnSquareSolved += sq_OnSquareSolved;
             }
         }
 
-        void sq_OnSquareSolved(Square sender, SquareSolvedEventArgs e)
+        void sq_OnSquareSolved(object sender, SquareSolvedEventArgs e)
         {
             //
         }
 
-        void sq_OnSquareExcludedChanged(Square sender, ExcludedChangedEventArgs e)
+        void sq_OnSquareExcludedChanged(object sender, ExcludedChangedEventArgs e)
         {
             //
         }

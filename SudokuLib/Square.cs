@@ -1,4 +1,4 @@
-using System;
+    using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Text;
@@ -105,7 +105,7 @@ namespace SudokuLib
                 //_possibleValues=new List<int>();
                 //_possibleValues.Add(_presetValue);
 
-                OnSquareSolved(this, new SquareSolvedEventArgs()
+                OnSquareSolved(this, new SquareSolvedEventArgs(this)
                 {
                     IsPreset = true,
                     KnownValue = _presetValue
@@ -135,7 +135,7 @@ namespace SudokuLib
                     //Set the new solvedvalue
                     _solvedValue = value;
 
-                    OnSquareSolved(this, new SquareSolvedEventArgs()
+                    OnSquareSolved(this, new SquareSolvedEventArgs(this)
                     {
                         IsPreset = false,
                         KnownValue = _solvedValue
@@ -225,10 +225,10 @@ namespace SudokuLib
                     switch (_possibleValues.Count)
                     {
                         case 0:
-                            OnSquareNotSolvable(this, new EventArgs());
+                            OnSquareNotSolvable(this, EventArgs.Empty);
                             break;
                         case 1:
-                            OnSquareSolved(this, new SquareSolvedEventArgs()
+                            OnSquareSolved(this, new SquareSolvedEventArgs(this)
                             {
                                 IsPreset = false,
                                 KnownValue = _possibleValues[0]
@@ -248,10 +248,10 @@ namespace SudokuLib
         //public delegate void SquareUnSolvedHandler(Square sender, SquareSolvedEventArgs e);
         //public event SquareUnSolvedHandler OnSquareUnSolved;
 
-        public delegate void SquareNotSolvableHandler(Square sender, EventArgs e);
+        public delegate void SquareNotSolvableHandler(object sender, EventArgs e);
         public event SquareNotSolvableHandler OnSquareNotSolvable;
 
-        public delegate void SquareExcludedChangedHandler(Square sender, ExcludedChangedEventArgs e);
+        public delegate void SquareExcludedChangedHandler(object sender, ExcludedChangedEventArgs e);
         public event SquareExcludedChangedHandler OnSquareExcludedChanged;
 
         //public delegate void SquareResetHandler(Square sender, EventArgs e);
@@ -283,8 +283,9 @@ namespace SudokuLib
             set { _isExcluded = value; }
         }
     }
-    public class SquareSolvedEventArgs : EventArgs
+    public class SquareSolvedEventArgs(Square sq) : EventArgs
     {
+        public Square Square { get; set; } = sq;
         public bool IsPreset { get; set; }
         public int KnownValue { get; set; }
     }

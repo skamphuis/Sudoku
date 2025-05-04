@@ -43,10 +43,10 @@ namespace SudokuSolver
             this.lblPos9.Click += new System.EventHandler(this.SudokuSquare_Click);
             this.lblValue.Click += new System.EventHandler(this.SudokuSquare_Click);
 
-            _mySquare.OnSquareSolved += new Square.SquareSolvedHandler(MySquare_OnSquareSolved);
+            _mySquare.OnSquareSolved += MySquare_OnSquareSolved;
             //_mySquare.OnSquareUnSolved += new Square.SquareUnSolvedHandler(_mySquare_OnSquareUnSolved);
-            _mySquare.OnSquareNotSolvable += new Square.SquareNotSolvableHandler(MySquare_OnSquareNotSolvable);
-            _mySquare.OnSquareExcludedChanged += new Square.SquareExcludedChangedHandler(MySquare_OnSquareExcludedChanged);
+            _mySquare.OnSquareNotSolvable += MySquare_OnSquareNotSolvable;
+            _mySquare.OnSquareExcludedChanged += MySquare_OnSquareExcludedChanged;
         }
 
         private Color ColorError = Color.Red;
@@ -79,7 +79,7 @@ namespace SudokuSolver
             }
         }
 
-        void MySquare_OnSquareExcludedChanged(Square sender, ExcludedChangedEventArgs e)
+        void MySquare_OnSquareExcludedChanged(object sender, ExcludedChangedEventArgs e)
         {
             Label lblValue = (Label)this.Controls["lblPos" + e.ChangedValue.ToString()];
             if (e.IsExcluded)
@@ -92,12 +92,12 @@ namespace SudokuSolver
             }
         }
 
-        void MySquare_OnSquareNotSolvable(Square sender, EventArgs e)
+        void MySquare_OnSquareNotSolvable(object sender, EventArgs e)
         {
             setValue(int.MinValue, KnownValueType.Error);
         }
 
-        void MySquare_OnSquareSolved(Square sender, SquareSolvedEventArgs e)
+        void MySquare_OnSquareSolved(object sender, SquareSolvedEventArgs e)
         {
             if (e.IsPreset)
             {
