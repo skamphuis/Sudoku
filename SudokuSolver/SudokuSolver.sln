@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SudokuSolver", "SudokuSolver.csproj", "{F7DE4989-0C02-4B7A-A3B3-9D9C2F7652E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SudokuLibStd", "..\SudokuLibStd\SudokuLibStd.csproj", "{2EEF679C-0A80-4DD9-A018-260968898E0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SudokuLib", "..\SudokuLibStd\SudokuLib.csproj", "{2EEF679C-0A80-4DD9-A018-260968898E0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

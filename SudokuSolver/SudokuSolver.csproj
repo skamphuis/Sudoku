@@ -152,9 +152,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SudokuLibStd\SudokuLibStd.csproj">
+    <ProjectReference Include="..\SudokuLibStd\SudokuLib.csproj">
       <Project>{2eef679c-0a80-4dd9-a018-260968898e0f}</Project>
-      <Name>SudokuLibStd</Name>
+      <Name>SudokuLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
