@@ -13,7 +13,7 @@ namespace SudokuSolver
         public SudokuBoard()
         {
             InitializeComponent();
-            this.Board = new SudokuLib.Board();
+            this.Board = new SudokuLib.Board(9);
 
             this.Board.OnSudokuSolved += new SudokuLib.Board.SudokuSolvedHandler(Board_OnSudokuSolved);
             drawBoard();

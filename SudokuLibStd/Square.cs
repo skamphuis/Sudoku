@@ -11,77 +11,54 @@ namespace SudokuLib
         public Square(int squareNumber, int maxValue)
         {
             Number = squareNumber;
-            _maxValue = maxValue;
+            MaxValue = maxValue;
 
             includeAll();
         }
 
         private void includeAll()
         {
-            _possibleValues.Clear();
+            PossibleValues.Clear();
             for (int i = 1; i <= MaxValue; i++)
             {
-                _possibleValues.Insert(i - 1, i);
+                PossibleValues.Insert(i - 1, i);
             }
 
-            _excludedValues = new List<int>();
+            ExcludedValues = [];
         }
 
-        private int _Number;
-        public int Number
-        {
-            get { return _Number; }
-            set { _Number = value; }
-        }
+        /// <summary>
+        /// Square number in the board, 0-based, right to left, top to bottom.
+        /// </summary>
+        public int Number { get; set; }
+        public int MaxValue { get; }
+        public int BoxSize => (int)Math.Sqrt(MaxValue);
+        public int RowIndex => (int)Math.Floor((double)(Number - 1) / MaxValue);
+        public int ColumnIndex => (Number - 1) % MaxValue;
+        /// <summary>
+        /// Column index of the box this square is in
+        /// </summary>
+        public int BoxColumnIndex => (int)Math.Floor((decimal)(ColumnIndex / BoxSize));
+        /// <summary>
+        /// Row index of the box this square is in
+        /// </summary>
+        public int BoxRowIndex => (int)Math.Floor((decimal)(RowIndex / BoxSize));
+        /// <summary>
+        /// In which column within the box is this square? 
+        /// </summary>
+        public int BoxColumnPos => ColumnIndex - (BoxColumnIndex * BoxSize);
+        /// <summary>
+        /// In which row within the box is this square? 
+        /// </summary>
+        public int BoxRowPos => RowIndex - (BoxRowIndex * BoxSize);
 
-        private int _maxValue;
-        public int MaxValue
-        {
-            get { return _maxValue; }
-        }
-
-        public int RowIndex
-        {
-            get
-            {
-                return (int)Math.Floor((double)(Number - 1) / MaxValue);
-                //return (int)Math.Floor((double)SquareNumber / MaxValue) + (SquareNumber % MaxValue);
-            }
-        }
-
-        public int ColumnIndex
-        {
-            get { return (Number - 1) % MaxValue; }
-        }
-
-        private List<int> _excludedValues = new List<int>();
-        public List<int> ExcludedValues
-        {
-            get { return _excludedValues; }
-        }
-
-        private List<int> _possibleValues = new List<int>();
-        public List<int> PossibleValues
-        {
-            get { return _possibleValues; }
-        }
-
-        //public void UnsetValue()
-        //{
-        //    //remember the current preset
-        //    int oldPreset = _presetValue;
-
-        //    if (_presetValue > 0)
-        //    {
-        //        _presetValue = -1;
-        //        OnSquareUnSolved(this, new SquareSolvedEventArgs(oldPreset, true));
-        //    }
-        //}
+        public List<int> ExcludedValues { get; private set; } = [];
+        public List<int> PossibleValues { get; } = [];
 
         private int _presetValue = -1;
         public int PresetValue
         {
-            get { return _presetValue; }
+            get => _presetValue;
             set
             {
                 if (IsKnown)
@@ -89,7 +66,7 @@ namespace SudokuLib
 
                 }
                 //value must be in PossibleValues
-                if (!_possibleValues.Contains(value))
+                if (!PossibleValues.Contains(value))
                 {
                     throw new InvalidPresetException(this, value);
                 }
@@ -116,11 +93,11 @@ namespace SudokuLib
         private int _solvedValue = -1;
         public int SolvedValue
         {
-            get { return _solvedValue; }
+            get => _solvedValue;
             set
             {
                 //value must be in PossibleValues
-                if (!_possibleValues.Contains(value))
+                if (!PossibleValues.Contains(value))
                 {
                     throw new InvalidPresetException(this, value);
                 }
@@ -144,27 +121,9 @@ namespace SudokuLib
             }
         }
 
-        //public void ResetSquare()
-        //{
-        //    includeAll();
-        //    OnSquareReset(this, new EventArgs());
-        //}
-
-        public bool IsKnown
-        {
-            get { return (IsPreset || IsSolved); }
-        }
-
-        public bool IsPreset
-        {
-            get { return (_presetValue > 0); }
-        }
-
-        public bool IsSolved
-        {
-            get { return ((IsPreset == false) && (_possibleValues.Count == 1 || _solvedValue>0)); }
-        }
-
+        public bool IsKnown => (IsPreset || IsSolved);
+        public bool IsPreset => (_presetValue > 0);
+        public bool IsSolved => ((IsPreset == false) && (PossibleValues.Count == 1 || _solvedValue>0));
         public int Value
         {
             get
@@ -177,9 +136,9 @@ namespace SudokuLib
                 {
                     return _solvedValue;
                 }
-                else if (_possibleValues.Count == 1)
+                else if (PossibleValues.Count == 1)
                 {
-                    return _possibleValues[0];
+                    return PossibleValues[0];
                 }
                 else
                 {
@@ -192,37 +151,38 @@ namespace SudokuLib
         public void IncludeValue(int valueToInclude)
         {
             //Possibly add to PossibleValues
-            if (!_possibleValues.Contains(valueToInclude))
+            if (!PossibleValues.Contains(valueToInclude))
             {
-                _possibleValues.Add(valueToInclude);
+                PossibleValues.Add(valueToInclude);
             }
 
             //Possibly remove from PossibleValues
-            if (_excludedValues.Contains(valueToInclude))
+            if (ExcludedValues.Contains(valueToInclude))
             {
-                _excludedValues.Remove(valueToInclude);
+                ExcludedValues.Remove(valueToInclude);
             }
 
             OnSquareExcludedChanged(this, new ExcludedChangedEventArgs(valueToInclude, false));
         }
+
         public void ExcludeValue(int valueToExclude)
         {
             //first remember if it's a known square
             bool isKnown = IsKnown;
 
             //see if the value was still an option for this square
-            if (_possibleValues.Contains(valueToExclude))
+            if (PossibleValues.Contains(valueToExclude))
             {
                 //if so...remove it
-                _possibleValues.Remove(valueToExclude);
+                PossibleValues.Remove(valueToExclude);
                 //and add to Excludedvalues
-                _excludedValues.Add(valueToExclude);
+                ExcludedValues.Add(valueToExclude);
 
                 //in case this square didn't already have a value
                 //we'll find out if it's known now...
                 if (!isKnown)
                 {
-                    switch (_possibleValues.Count)
+                    switch (PossibleValues.Count)
                     {
                         case 0:
                             OnSquareNotSolvable(this, EventArgs.Empty);
@@ -231,7 +191,7 @@ namespace SudokuLib
                             OnSquareSolved(this, new SquareSolvedEventArgs(this)
                             {
                                 IsPreset = false,
-                                KnownValue = _possibleValues[0]
+                                KnownValue = PossibleValues[0]
                             });
                             break;
                         default:
@@ -269,19 +229,9 @@ namespace SudokuLib
             this.IsExcluded = isExcluded;
         }
 
-        private int _changedValue;
-        public int ChangedValue
-        {
-            get { return _changedValue; }
-            set { _changedValue = value; }
-        }
+        public int ChangedValue { get; set; }
 
-        private bool _isExcluded;
-        public bool IsExcluded
-        {
-            get { return _isExcluded; }
-            set { _isExcluded = value; }
-        }
+        public bool IsExcluded { get; set; }
     }
     public class SquareSolvedEventArgs(Square sq) : EventArgs
     {
@@ -301,23 +251,15 @@ namespace SudokuLib
             this.PresetValue = presetValue;
         }
 
-        private int _presetValue;
-        public int PresetValue
-        {
-            get { return _presetValue; }
-            set { _presetValue = value; }
-        }
+        public int PresetValue { get; set; }
 
         private Square _square;
         public Square Square
         {
-            get { return _square; }
-            set { _square = value; }
+            get => _square;
+            set => _square = value;
         }
-        public override string Message
-        {
-            get { return String.Format("{0} is not a possible value for square {1}.", _presetValue, _square.Number); ; }
-        }
+        public override string Message => $"{PresetValue} is not a possible value for square {_square.Number}.";
     }
     public class SquareAlreadyKnownException : Exception
     {
@@ -330,22 +272,14 @@ namespace SudokuLib
             this.KnownValue = knownValue;
         }
 
-        private int _knownValue;
-        public int KnownValue
-        {
-            get { return _knownValue; }
-            set { _knownValue = value; }
-        }
+        public int KnownValue { get; set; }
 
         private Square _square;
         public Square Square
         {
-            get { return _square; }
-            set { _square = value; }
+            get => _square;
+            set => _square = value;
         }
-        public override string Message
-        {
-            get { return String.Format("Value of square {0} is already known as {1}.", _square.Number, _knownValue);  }
-        }
+        public override string Message => $"Value of square {_square.Number} is already known as {KnownValue}.";
     }
 }

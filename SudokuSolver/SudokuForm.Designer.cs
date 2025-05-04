@@ -44,7 +44,7 @@ namespace SudokuSolver
             this.btnNew});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(801, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1037, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -54,7 +54,7 @@ namespace SudokuSolver
             this.btnNew.Image = ((System.Drawing.Image)(resources.GetObject("btnNew.Image")));
             this.btnNew.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnNew.Name = "btnNew";
-            this.btnNew.Size = new System.Drawing.Size(40, 22);
+            this.btnNew.Size = new System.Drawing.Size(35, 22);
             this.btnNew.Text = "&New";
             this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
             // 
@@ -63,41 +63,37 @@ namespace SudokuSolver
             this.pnlSudoku.AutoScroll = true;
             this.pnlSudoku.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlSudoku.Location = new System.Drawing.Point(0, 25);
-            this.pnlSudoku.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pnlSudoku.Name = "pnlSudoku";
-            this.pnlSudoku.Size = new System.Drawing.Size(441, 432);
+            this.pnlSudoku.Size = new System.Drawing.Size(476, 589);
             this.pnlSudoku.TabIndex = 1;
             // 
             // pnlSudokuStatus
             // 
             this.pnlSudokuStatus.Controls.Add(this.propertyGrid1);
             this.pnlSudokuStatus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlSudokuStatus.Location = new System.Drawing.Point(441, 25);
-            this.pnlSudokuStatus.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlSudokuStatus.Location = new System.Drawing.Point(476, 25);
             this.pnlSudokuStatus.Name = "pnlSudokuStatus";
-            this.pnlSudokuStatus.Size = new System.Drawing.Size(360, 432);
+            this.pnlSudokuStatus.Size = new System.Drawing.Size(561, 589);
             this.pnlSudokuStatus.TabIndex = 2;
             // 
             // propertyGrid1
             // 
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-            this.propertyGrid1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(360, 432);
+            this.propertyGrid1.Size = new System.Drawing.Size(561, 589);
             this.propertyGrid1.TabIndex = 0;
             // 
             // SudokuForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(801, 457);
+            this.ClientSize = new System.Drawing.Size(1037, 614);
             this.Controls.Add(this.pnlSudokuStatus);
             this.Controls.Add(this.pnlSudoku);
             this.Controls.Add(this.toolStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "SudokuForm";
             this.Text = "SudokuSolver";
             this.toolStrip1.ResumeLayout(false);

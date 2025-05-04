@@ -6,15 +6,31 @@ namespace SudokuLib
 {
     public class MiniSeries
     {
-        public MiniSeries(List<Square> squares)
+        /// <summary>
+        /// Constructor for a miniseries
+        /// </summary>
+        /// <param name="size">Size of the miniseries, is the Sqrt of the board size</param>
+        public MiniSeries(int size)
         {
-            foreach (Square sq in squares)
+            this.Size = size;
+            this.Squares = new List<Square>();
+            for (int i = 0; i < size; i++)
+            {
+                this.Squares.Add(null);
+            }
+        }
+
+        public MiniSeries(List<Square> squares) : this(squares.Count)
+        {
+            foreach (var sq in squares)
             {
                 //add event handlers
                 sq.OnSquareExcludedChanged += sq_OnSquareExcludedChanged;
                 sq.OnSquareSolved += sq_OnSquareSolved;
             }
         }
+
+        public int Size { get; private set; }
 
         void sq_OnSquareSolved(object sender, SquareSolvedEventArgs e)
         {
@@ -26,17 +42,9 @@ namespace SudokuLib
             //
         }
 
-        private List<Square> _squares = new List<Square>();
-        public List<Square> Squares
-        {
-            get { return _squares; }
-        }
+        public List<Square> Squares { get; private set; }
 
-        private List<int> _mustContainValues = new List<int>();
-        public List<int> MustContainValues
-        {
-            get { return _mustContainValues; }
-        }
+        public List<int> MustContainValues { get; } = [];
 
         public void MustContainValue(int mustContainValue)
         {
@@ -50,11 +58,7 @@ namespace SudokuLib
             }
         }
 
-        private List<int> _cantContainValues = new List<int>();
-        public List<int> CantContainValues
-        {
-            get { return _cantContainValues; }
-        }
+        public List<int> CantContainValues { get; } = [];
 
         public void CantContainValue(int cantContainValue)
         {
@@ -96,12 +100,7 @@ namespace SudokuLib
             this.AddedValue = addedValue;
         }
 
-        private int _addedValue;
-        public int AddedValue
-        {
-            get { return _addedValue; }
-            set { _addedValue = value; }
-        }
+        public int AddedValue { get; set; }
     }
 
     public class CantContainValueAddedEventArgs : EventArgs
@@ -115,11 +114,6 @@ namespace SudokuLib
             this.AddedValue = addedValue;
         }
 
-        private int _addedValue;
-        public int AddedValue
-        {
-            get { return _addedValue; }
-            set { _addedValue = value; }
-        }
+        public int AddedValue { get; set; }
     }
 }

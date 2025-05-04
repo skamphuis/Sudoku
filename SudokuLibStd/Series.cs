@@ -6,78 +6,102 @@ namespace SudokuLib
 {
     public enum SeriesType
     {
-        Row,Column,Box
+        Row, Column, Box
     }
     public class Series
     {
-        public Series(SeriesType seriesType, int seriesIndex)
+        public Series(int size, SeriesType seriesType, int seriesIndex)
         {
+            this.Size = size;
             this.SeriesType = seriesType;
             this.SeriesIndex = seriesIndex;
+
+            if (seriesType is SeriesType.Row or SeriesType.Box)
+            {
+                MiniSeriesHorizontal = [];
+                for (var i = 0; i < BoxSize; i++)
+                {
+                    AddMiniSeriesHorizontal(new MiniSeries(BoxSize));
+                }
+            }
+            if (seriesType is SeriesType.Column or SeriesType.Box)
+            {
+                MiniSeriesVertical = [];
+                for (var i = 0; i < BoxSize; i++)
+                {
+                    AddMiniSeriesVertical(new MiniSeries(BoxSize));
+                }
+            }
         }
 
-        private List<Square> _squares=new List<Square>();
-        public List<Square> Squares
-        {
-            get { return _squares; }
-        }
+        public int Size { get; private set; }
+        public int BoxSize => (int)Math.Sqrt(Size);
+        public List<Square> Squares { get; } = [];
 
         public void AddSquare(Square square)
         {
-            _squares.Add(square);
+            Squares.Add(square);
             square.OnSquareSolved += square_OnSquareSolved;
             square.OnSquareExcludedChanged += square_OnSquareExcludedChanged;
             //square.OnSquareUnSolved += new Square.SquareUnSolvedHandler(square_OnSquareUnSolved);
+
+            AddSquareToMiniSeries(square);
         }
 
+        private void AddSquareToMiniSeries(Square square)
+        {
+            //add square to the correct miniseries
+            if (SeriesType is SeriesType.Row or SeriesType.Box)
+            {
+                // this is a row, so add to the correct miniseries
+                // based on the boxColumnIndex and then the boxColumnPosition
+                MiniSeriesHorizontal[square.BoxColumnIndex].Squares[square.BoxColumnPos] = square;
+            }
+            else if (SeriesType is SeriesType.Column or SeriesType.Box)
+            {
+                // this is a column, so add to the correct miniseries
+                // based on the boxRowIndex and then the boxRowPosition
+                MiniSeriesVertical[square.BoxRowIndex].Squares[square.BoxRowPos] = square;
+            }
+        }
         public List<int> KnownValues
         {
-            get {
-                List<int> _values = new List<int>();
-                foreach (Square sq in Squares)
+            get
+            {
+                var values = new List<int>();
+                foreach (var sq in Squares)
                 {
-                    if (sq.IsPreset || sq.IsSolved) { _values.Add(sq.Value); }
+                    if (sq.IsPreset || sq.IsSolved) { values.Add(sq.Value); }
                 }
-                return _values; }
+                return values;
+            }
         }
 
         public List<int> NeededValues
         {
             get
             {
-                List<int> _values = new List<int>();
-                List<int> _known = KnownValues;
+                List<int> values = new List<int>();
+                List<int> known = KnownValues;
 
                 for (int i = 1; i <= Squares.Count; i++)
                 {
-                    if (!_known.Contains(i))
+                    if (!known.Contains(i))
                     {
-                        _values.Add(i);
+                        values.Add(i);
                     }
                 }
-                
-                return _values;
+
+                return values;
             }
         }
 
-        private SeriesType _seriesType;
-        public SeriesType SeriesType
-        {
-            get { return _seriesType; }
-            set { _seriesType = value; }
-        }
-        private int _seriesIndex;
-        public int SeriesIndex
-        {
-            get { return _seriesIndex; }
-            set { _seriesIndex = value; }
-        }
+        public SeriesType SeriesType { get; set; }
 
-        private List<MiniSeries> _miniSeriesHorizontal = new List<MiniSeries>();
-        public List<MiniSeries> MiniSeriesHorizontal
-        {
-            get { return _miniSeriesHorizontal; }
-        }
+        public int SeriesIndex { get; set; }
+
+        public List<MiniSeries> MiniSeriesHorizontal { get; } = new List<MiniSeries>();
+
         public void AddMiniSeriesHorizontal(MiniSeries miniSeries)
         {
             MiniSeriesHorizontal.Add(miniSeries);
@@ -96,15 +120,12 @@ namespace SudokuLib
             }
         }
 
-        private List<MiniSeries> _miniSeriesVertical;
-        public List<MiniSeries> MiniSeriesVertical
-        {
-            get { return _miniSeriesVertical; }
-        }
+        public List<MiniSeries> MiniSeriesVertical { get; }
+
         public void AddMiniSeriesVertical(MiniSeries miniSeries)
         {
             MiniSeriesVertical.Add(miniSeries);
-            miniSeries.OnMustContainValueAdded += new MiniSeries.MustContainValueAddedHandler(miniSeriesVertical_OnMustContainValueAdded);
+            miniSeries.OnMustContainValueAdded += miniSeriesVertical_OnMustContainValueAdded;
         }
 
         void miniSeriesVertical_OnMustContainValueAdded(MiniSeries sender, MustContainValueAddedEventArgs e)
@@ -119,12 +140,11 @@ namespace SudokuLib
             }
         }
 
-
         void square_OnSquareSolved(object sender, SquareSolvedEventArgs e)
         {
             //loop through the other squares in this series to 
             //inform them about a new exluded value
-            foreach (Square square in _squares)
+            foreach (Square square in Squares)
             {
                 if (square.Number != ((Square)sender).Number)
                 {
@@ -133,11 +153,6 @@ namespace SudokuLib
             }
 
             findSinglePossibilities();
-
-            //if (seriesIsSolved)
-            //{
-            //    OnSeriesSolved(this, new EventArgs());
-            //}
         }
 
         void square_OnSquareExcludedChanged(object sender, ExcludedChangedEventArgs e)
@@ -157,15 +172,15 @@ namespace SudokuLib
             foreach (int val in this.NeededValues)
             {
                 //set found indicator to false
-                List<Square> foundSquares=new List<Square>();
+                List<Square> foundSquares = new List<Square>();
 
                 //loop through square to see if there's only 1 with this possible value
-                foreach (Square square in _squares)
+                foreach (Square square in Squares)
                 {
                     if (!square.IsKnown && square.PossibleValues.Contains(val))
                     {
                         foundSquares.Add(square);
-                        if (foundSquares.Count>1)
+                        if (foundSquares.Count > 1)
                         {
                             //this value was found before: found it again, so not solved
                             break;
@@ -174,26 +189,11 @@ namespace SudokuLib
                 }
 
                 //now see if there's only one square with this possible value
-                if(foundSquares.Count==1)
+                if (foundSquares.Count == 1)
                 {
                     foundSquares[0].SolvedValue = val;
                 }
             }
         }
-        //private void square_OnSquareUnSolved(Square sender, SquareSolvedEventArgs e)
-        //{
-        //    //loop through the other squares in this series to 
-        //    //inform them about a new available value
-        //    foreach (Square square in _squares)
-        //    {
-        //        if (square.Number != sender.Number)
-        //        {
-        //            square.IncludeValue(e.KnownValue);
-        //        }
-        //    }
-        //}
-
-        //public delegate void SeriesSolvedHandler(Series sender, EventArgs e);
-        //public event SeriesSolvedHandler OnSeriesSolved;
     }
 }
