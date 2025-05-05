@@ -35,5 +35,26 @@ namespace SudokuSolver
             this.propertyGrid1.Refresh();
         }
 
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            var import = new Import();
+            // show the import form as modal
+            import.ShowDialog(this);
+            if (!string.IsNullOrEmpty(import.Json))
+            {
+                pnlSudoku.Controls.Clear();
+                SudokuBoard sb = new SudokuBoard(import.Json);
+
+                sb.Top = 0;
+                sb.Left = 0;
+            
+                pnlSudoku.Controls.Add(sb);
+
+                sb.Board.OnBoardEvent += new SudokuLib.Board.BoardEventHandler(Board_OnBoardEvent);
+                this.propertyGrid1.SelectedObject = sb.Board;
+                sb.Board.SetPresetNumbers();
+                pnlSudoku.Select();
+            }
+        }
     }
 }

@@ -34,6 +34,7 @@ namespace SudokuSolver
             this.pnlSudoku = new System.Windows.Forms.Panel();
             this.pnlSudokuStatus = new System.Windows.Forms.Panel();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.btnImport = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.pnlSudokuStatus.SuspendLayout();
             this.SuspendLayout();
@@ -41,7 +42,8 @@ namespace SudokuSolver
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnNew});
+            this.btnNew,
+            this.btnImport});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(804, 25);
@@ -84,6 +86,16 @@ namespace SudokuSolver
             this.propertyGrid1.Size = new System.Drawing.Size(328, 496);
             this.propertyGrid1.TabIndex = 0;
             // 
+            // btnImport
+            // 
+            this.btnImport.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnImport.Image = ((System.Drawing.Image)(resources.GetObject("btnImport.Image")));
+            this.btnImport.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(47, 22);
+            this.btnImport.Text = "Import";
+            this.btnImport.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
             // SudokuForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -111,6 +123,7 @@ namespace SudokuSolver
         private System.Windows.Forms.ToolStripButton btnNew;
         private System.Windows.Forms.Panel pnlSudokuStatus;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.ToolStripButton btnImport;
     }
 }
 

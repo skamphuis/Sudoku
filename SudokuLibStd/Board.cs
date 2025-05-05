@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace SudokuLib
 {
@@ -40,6 +41,84 @@ namespace SudokuLib
                     //now find the right miniseries to put this square into
                 }
             }
+        }
+
+        public static Board FromJson(string boardJson)
+        {
+            /*
+[
+   [0,0,0,0,0,0,0,0,0],
+   [0,0,0,0,0,0,0,0,0],
+   [0,0,0,0,0,0,0,0,0],
+   [0,0,0,0,0,0,0,0,0],
+   [0,0,0,0,0,0,0,0,0],
+   [0,0,0,0,0,0,0,0,0],
+   [0,0,0,0,0,0,0,0,0],
+   [0,0,0,0,0,0,0,0,0],
+   [0,0,0,0,0,0,0,0,0],
+]
+*/
+            var presetNumbers = JArray.Parse(boardJson);
+            var retval = new Board(presetNumbers.Count);
+            retval.PresetNumbers = presetNumbers;
+            retval.ValidatePresetNumbers();
+            return retval;
+        }
+
+        private JArray PresetNumbers { get; set; }
+
+        public void SetPresetNumbers()
+        {
+            // now set the preset values
+            for (int iRow = 0; iRow < Size; iRow++)
+            {
+                for (int iCol = 0; iCol < Size; iCol++)
+                {
+                    var number = (int)PresetNumbers[iRow][iCol];
+                    if (number > 0)
+                    {
+                        AllSquares[(iRow * Size) + iCol].PresetValue = number;
+                    }
+                }
+            }
+        }
+
+        public bool ValidatePresetNumbers(string boardJson)
+        {
+            PresetNumbers = JArray.Parse(boardJson);
+            return ValidatePresetNumbers();
+        }
+        public bool ValidatePresetNumbers()
+        {
+            var size = PresetNumbers.Count;
+
+            // check if the JArray only contains JArrays
+            foreach (var row in PresetNumbers)
+            {
+                if (row.Type != JTokenType.Array)
+                {
+                    throw new Exception("Invalid board format");
+                }
+                // check if the JArray contains size number of elements
+                if (((JArray)row).Count != size)
+                {
+                    throw new Exception("Invalid board format");
+                }
+                // check if the JArray contains only integers between 1 and size
+                foreach (var number in row)
+                {
+                    if (number.Type != JTokenType.Integer)
+                    {
+                        throw new Exception("Invalid board format");
+                    }
+                    if ((int)number < 0 || (int)number > size)
+                    {
+                        throw new Exception("Invalid board format");
+                    }
+                }
+            }
+            // it is correct, so we can create the board
+            return true;
         }
 
         private void createMiniSeries()

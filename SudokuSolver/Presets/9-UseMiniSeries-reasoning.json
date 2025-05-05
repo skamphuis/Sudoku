@@ -1,0 +1,15 @@
+// Importing this board should result in:
+// miniseries 0,2 must contain a 1
+// therefore miniseries 1,0 must also contain a 1
+// and since that has only one empty cell, cell 0,1 must be a 1
+[
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 7, 8, 0, 0, 0, 2, 3, 4 ],
+  [ 0, 0, 0, 0, 1, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+]
