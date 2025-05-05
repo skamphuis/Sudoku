@@ -171,6 +171,9 @@ namespace SudokuLib
         [Category("Squares"), DisplayName("Boxes"), Browsable(false)]
         public List<Series> Boxes { get; private set; }
 
+        public List<MiniSeries> RowMiniSeries { get; } = [];
+        public List<MiniSeries> ColumnMiniSeries { get; } = [];
+
         private void CreateAllSeries()
         {
             Columns = new List<Series>();
@@ -178,9 +181,21 @@ namespace SudokuLib
             Boxes = new List<Series>();
             AllSeries = new List<Series>();
 
+            CreateMiniSeries();
             CreateSeries(Columns, SeriesType.Column);
             CreateSeries(Rows, SeriesType.Row);
             CreateSeries(Boxes, SeriesType.Box);
+        }
+        private void CreateMiniSeries()
+        {
+            // we need Size * BoxSize mini series as rows and as columns
+            // the order doesn't matter at this point, since they will
+            // be tied together within the series later on
+            for (int i = 0; i < (int)(BoxSize * Size); i++)
+            {
+                RowMiniSeries.Add(new MiniSeries(BoxSize));
+                ColumnMiniSeries.Add(new MiniSeries(BoxSize));
+            }
         }
         private void CreateSeries(List<Series> series, SeriesType seriesType)
         {
@@ -189,6 +204,20 @@ namespace SudokuLib
             {
                 _series = new Series(Size, seriesType, i);
                 //_series.OnSeriesSolved += new Series.SeriesSolvedHandler(series_OnSeriesSolved);
+
+                // add the miniseries
+                for (int j = 0; j < BoxSize; j++)
+                {
+                    if (seriesType is SeriesType.Row or SeriesType.Box)
+                    {
+                        _series.AddMiniSeriesHorizontal(RowMiniSeries[(i * BoxSize) + j]);
+                    }
+                    if (seriesType is SeriesType.Column or SeriesType.Box)
+                    {
+                        _series.AddMiniSeriesVertical(ColumnMiniSeries[(i * BoxSize) + j]);
+                    }
+                }
+
                 series.Add(_series);
                 AllSeries.Add(_series);
             }

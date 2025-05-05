@@ -54,7 +54,7 @@ namespace SudokuLib
                 //just raise the event. The series will respond by excluding the value in other series
                 //which will eventually leave only one option for a value in a series. 
                 //This will be solved by the series
-                OnMustContainValueAdded(this,new MustContainValueAddedEventArgs(mustContainValue));
+                OnMustContainValueAdded(this,new MustContainValueAddedEventArgs(mustContainValue, this));
             }
         }
 
@@ -71,15 +71,19 @@ namespace SudokuLib
                 {
                     sq.ExcludeValue(cantContainValue);
                 }
-                //no event needs to be raised, because the squares already do so
-                //OnCantContainValueAdded(this, new CantContainValueAddedEventArgs(CantContainValue));
+
+                OnCantContainValueAdded(this, new CantContainValueAddedEventArgs(cantContainValue, this));
             }
         }
 
         public void ExcludeValue(int value)
         {
-            //Exclude this value in each square
-            //raising events is not needed at this time, because the squares themselves will do so
+            // Exclude this value in each square
+            // raising events is not needed at this time, because the squares themselves will do so
+            foreach (var sq in this.Squares)
+            {
+                sq.ExcludeValue(value);
+            }
         }
 
         public delegate void MustContainValueAddedHandler(MiniSeries sender, MustContainValueAddedEventArgs e);
@@ -95,12 +99,14 @@ namespace SudokuLib
         {
         }
 
-        public MustContainValueAddedEventArgs(int addedValue)
+        public MustContainValueAddedEventArgs( int addedValue, MiniSeries miniSeries)
         {
             this.AddedValue = addedValue;
+            this.MiniSeries = miniSeries;
         }
 
         public int AddedValue { get; set; }
+        public MiniSeries MiniSeries { get; set; }
     }
 
     public class CantContainValueAddedEventArgs : EventArgs
@@ -109,11 +115,13 @@ namespace SudokuLib
         {
         }
 
-        public CantContainValueAddedEventArgs(int addedValue)
+        public CantContainValueAddedEventArgs(int addedValue, MiniSeries miniSeries)
         {
             this.AddedValue = addedValue;
+            this.MiniSeries = miniSeries;
         }
 
         public int AddedValue { get; set; }
+        public MiniSeries MiniSeries { get; set; }
     }
 }

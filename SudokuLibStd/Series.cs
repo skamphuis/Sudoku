@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SudokuLib
@@ -16,22 +17,8 @@ namespace SudokuLib
             this.SeriesType = seriesType;
             this.SeriesIndex = seriesIndex;
 
-            if (seriesType is SeriesType.Row or SeriesType.Box)
-            {
-                MiniSeriesHorizontal = [];
-                for (var i = 0; i < BoxSize; i++)
-                {
-                    AddMiniSeriesHorizontal(new MiniSeries(BoxSize));
-                }
-            }
-            if (seriesType is SeriesType.Column or SeriesType.Box)
-            {
-                MiniSeriesVertical = [];
-                for (var i = 0; i < BoxSize; i++)
-                {
-                    AddMiniSeriesVertical(new MiniSeries(BoxSize));
-                }
-            }
+            MiniSeriesHorizontal = [];
+            MiniSeriesVertical = [];
         }
 
         public int Size { get; private set; }
@@ -81,10 +68,10 @@ namespace SudokuLib
         {
             get
             {
-                List<int> values = new List<int>();
-                List<int> known = KnownValues;
+                var values = new List<int>();
+                var known = KnownValues;
 
-                for (int i = 1; i <= Squares.Count; i++)
+                for (int i = 1; i <= this.Size; i++)
                 {
                     if (!known.Contains(i))
                     {
@@ -100,57 +87,60 @@ namespace SudokuLib
 
         public int SeriesIndex { get; set; }
 
-        public List<MiniSeries> MiniSeriesHorizontal { get; } = new List<MiniSeries>();
-
+        public List<MiniSeries> MiniSeriesHorizontal { get; }
+        public List<MiniSeries> MiniSeriesVertical { get; }
+        public List<MiniSeries> AllMiniSeries => MiniSeriesHorizontal.Concat(MiniSeriesVertical).ToList();
         public void AddMiniSeriesHorizontal(MiniSeries miniSeries)
         {
             MiniSeriesHorizontal.Add(miniSeries);
-            miniSeries.OnMustContainValueAdded += new MiniSeries.MustContainValueAddedHandler(miniSeriesHorizontal_OnMustContainValueAdded);
+            miniSeries.OnMustContainValueAdded += miniSeries_OnMustContainValueAdded;
+            miniSeries.OnCantContainValueAdded += miniSeries_OnCantContainValueAdded;
         }
 
-        void miniSeriesHorizontal_OnMustContainValueAdded(MiniSeries sender, MustContainValueAddedEventArgs e)
+        void miniSeries_OnMustContainValueAdded(MiniSeries sender, MustContainValueAddedEventArgs e)
         {
-            //tell the other miniseries they can't contain this value
-            foreach (MiniSeries ms in MiniSeriesHorizontal)
+            // tell the other miniseries (not containing any of the squares of the passed in miniseries)
+            // they can't contain this value
+            foreach (MiniSeries ms in AllMiniSeries)
             {
-                if (!ms.Equals(sender))
+                if (ms.Squares.TrueForAll(
+                        s => e.MiniSeries.Squares.TrueForAll(
+                            s1 => s.Number != s1.Number)))
                 {
                     ms.ExcludeValue(e.AddedValue);
                 }
             }
         }
-
-        public List<MiniSeries> MiniSeriesVertical { get; }
 
         public void AddMiniSeriesVertical(MiniSeries miniSeries)
         {
             MiniSeriesVertical.Add(miniSeries);
-            miniSeries.OnMustContainValueAdded += miniSeriesVertical_OnMustContainValueAdded;
+            miniSeries.OnMustContainValueAdded += miniSeries_OnMustContainValueAdded;
+            miniSeries.OnCantContainValueAdded += miniSeries_OnCantContainValueAdded;
         }
 
-        void miniSeriesVertical_OnMustContainValueAdded(MiniSeries sender, MustContainValueAddedEventArgs e)
+        private void miniSeries_OnCantContainValueAdded(MiniSeries sender, CantContainValueAddedEventArgs e)
         {
-            //tell the other miniseries they can't contain this value
-            foreach (MiniSeries ms in MiniSeriesVertical)
-            {
-                if (!ms.Equals(sender))
-                {
-                    ms.ExcludeValue(e.AddedValue);
-                }
-            }
+            // TODO?
         }
 
         void square_OnSquareSolved(object sender, SquareSolvedEventArgs e)
         {
             //loop through the other squares in this series to 
             //inform them about a new exluded value
-            foreach (Square square in Squares)
+            foreach (var square in Squares)
             {
                 if (square.Number != ((Square)sender).Number)
                 {
                     square.ExcludeValue(e.KnownValue);
                 }
             }
+
+            // if a value occurs in only one miniseries,
+            // we can inform the other miniseries of all the series it is part of
+            // and exclude this value from the other miniseries
+            // this also means the miniseries should be a reference and
+            // therefore be created on board level, like the series themselves
 
             findSinglePossibilities();
         }
@@ -193,6 +183,24 @@ namespace SudokuLib
                 {
                     foundSquares[0].SolvedValue = val;
                 }
+            }
+        }
+
+        /// <summary>
+        /// This method tries to find miniseries in this series of which it is now known
+        /// they must contain the value that is now excluded from a square
+        /// </summary>
+        /// <param name="valueExcludedFromSquare"></param>
+        public void findMiniSeriesMustContain(int valueExcludedFromSquare)
+        {
+            // loop through all horizontal miniseries.
+            // if only 1 miniseries has this value as possibleValue,
+            // it must be in that miniseries
+            if(MiniSeriesHorizontal.Count(ms => ms.Squares.Any(s => s.PossibleValues.Contains(valueExcludedFromSquare))) == 1)
+            {
+                //this miniseries must contain the value
+                MiniSeries ms = MiniSeriesHorizontal.First(ms => ms.Squares.Any(s => s.PossibleValues.Contains(valueExcludedFromSquare)));
+                ms.MustContainValue(valueExcludedFromSquare);
             }
         }
     }

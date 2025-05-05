@@ -44,7 +44,7 @@ namespace SudokuSolver
             this.btnNew});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1037, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(804, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -64,7 +64,7 @@ namespace SudokuSolver
             this.pnlSudoku.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlSudoku.Location = new System.Drawing.Point(0, 25);
             this.pnlSudoku.Name = "pnlSudoku";
-            this.pnlSudoku.Size = new System.Drawing.Size(476, 589);
+            this.pnlSudoku.Size = new System.Drawing.Size(476, 496);
             this.pnlSudoku.TabIndex = 1;
             // 
             // pnlSudokuStatus
@@ -73,7 +73,7 @@ namespace SudokuSolver
             this.pnlSudokuStatus.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlSudokuStatus.Location = new System.Drawing.Point(476, 25);
             this.pnlSudokuStatus.Name = "pnlSudokuStatus";
-            this.pnlSudokuStatus.Size = new System.Drawing.Size(561, 589);
+            this.pnlSudokuStatus.Size = new System.Drawing.Size(328, 496);
             this.pnlSudokuStatus.TabIndex = 2;
             // 
             // propertyGrid1
@@ -81,7 +81,7 @@ namespace SudokuSolver
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(561, 589);
+            this.propertyGrid1.Size = new System.Drawing.Size(328, 496);
             this.propertyGrid1.TabIndex = 0;
             // 
             // SudokuForm
@@ -89,7 +89,7 @@ namespace SudokuSolver
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1037, 614);
+            this.ClientSize = new System.Drawing.Size(804, 521);
             this.Controls.Add(this.pnlSudokuStatus);
             this.Controls.Add(this.pnlSudoku);
             this.Controls.Add(this.toolStrip1);
