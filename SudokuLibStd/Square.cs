@@ -156,7 +156,7 @@ namespace SudokuLib
                 PossibleValues.Add(valueToInclude);
             }
 
-            //Possibly remove from PossibleValues
+            //Possibly remove from ExcludedValues
             if (ExcludedValues.Contains(valueToInclude))
             {
                 ExcludedValues.Remove(valueToInclude);

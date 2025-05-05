@@ -18,7 +18,7 @@ namespace SudokuSolver
         private void btnNew_Click(object sender, EventArgs e)
         {
             pnlSudoku.Controls.Clear();
-            SudokuBoard sb =new SudokuBoard();
+            SudokuBoard sb =new SudokuBoard(9);
 
             sb.Top = 0;
             sb.Left = 0;

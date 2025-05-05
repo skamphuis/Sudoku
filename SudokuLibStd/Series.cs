@@ -143,13 +143,19 @@ namespace SudokuLib
             // therefore be created on board level, like the series themselves
 
             findSinglePossibilities();
+            //findMiniSeriesMustContain(e.KnownValue);
         }
 
         void square_OnSquareExcludedChanged(object sender, ExcludedChangedEventArgs e)
         {
             //We'll need to find out if this exclusion of a value leaves
             //a single place for this value;
-            findSinglePossibilities();
+            if(e.IsExcluded)
+            {
+                //this square is excluded from this value, so we can check if this value is now a single possibility in this series
+                findSinglePossibilities();
+                //findMiniSeriesMustContain(e.ChangedValue);
+            }
         }
 
         /// <summary>
@@ -200,6 +206,12 @@ namespace SudokuLib
             {
                 //this miniseries must contain the value
                 MiniSeries ms = MiniSeriesHorizontal.First(ms => ms.Squares.Any(s => s.PossibleValues.Contains(valueExcludedFromSquare)));
+                ms.MustContainValue(valueExcludedFromSquare);
+            }
+            if(MiniSeriesVertical.Count(ms => ms.Squares.Any(s => s.PossibleValues.Contains(valueExcludedFromSquare))) == 1)
+            {
+                //this miniseries must contain the value
+                MiniSeries ms = MiniSeriesVertical.First(ms => ms.Squares.Any(s => s.PossibleValues.Contains(valueExcludedFromSquare)));
                 ms.MustContainValue(valueExcludedFromSquare);
             }
         }

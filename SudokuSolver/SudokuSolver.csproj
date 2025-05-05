@@ -124,6 +124,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="Presets\9-7-stars.json" />
     <None Include="Presets\9-UseMiniSeries-reasoning.json" />
     <None Include="Presets\9-TestImport.json" />
     <None Include="Presets\9-Empty.json" />
